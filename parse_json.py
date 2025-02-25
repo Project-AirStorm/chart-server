@@ -41,9 +41,10 @@ from metpy.units import units
 parameters = ['temperature', 'dew_point', 'wind_speed', 'wind_direction', 'geopotential_height']
 
 def parse_json(weather_json, hour_index):
-    # Iterate over array, if it contains null is casts it a np.nan, which makes the processing below easier. 
     
     '''
+    Iterates over the JSON array, if it contains null is casts it a np.nan, which makes the processing below easier. 
+
     Returns the raw soundings at each hPa FOR THE HOUR passed in. 
 
     temperature_600hPa	
@@ -105,8 +106,6 @@ def plot_skewt_from_json(parsed_data):
     # Convert speed/direction to U/V
     u, v = mpcalc.wind_components(wind_speed, wind_direction)
 
-
-
     # -- Now set up the SkewT figure
     fig = plt.figure(figsize=(9, 9))
     # add_metpy_logo(fig, 100, 80, size='small')
@@ -114,8 +113,8 @@ def plot_skewt_from_json(parsed_data):
     skew = SkewT(fig, rotation=45, rect=(0.1, 0.1, 0.55, 0.85))
 
     # -- Plot data
-    skew.plot(pressures, temp_array, 'r')
-    skew.plot(pressures, dew_point_array, 'g')
+    skew.plot(pressures, temp_array, 'r', label="Temperature")
+    skew.plot(pressures, dew_point_array, 'g', label="Dewpoint")
     skew.plot_barbs(pressures, u, v)
 
     # Set axis limits
@@ -128,28 +127,23 @@ def plot_skewt_from_json(parsed_data):
     skew.plot_mixing_lines()
 
     # -- Hodograph (optional)
-    # Create a new axes for the hodograph
     ax_hod = plt.axes((0.7, 0.75, 0.2, 0.2))
     h = Hodograph(ax_hod, component_range=80.)  # max range in knots
     h.add_grid(increment=20)
     h.plot(u, v)  # plot the wind profile
+
+     # Add legends to the skew and hodo
+    skewleg = skew.ax.legend(loc='upper left')
+    hodoleg = h.ax.legend(loc='upper left')
 
     # Show or save
     plt.show()
     # Or: plt.savefig("skewt_example.png", dpi=150)
 
 
-
-
 # Example usage:
 if __name__ == "__main__":
-    # Suppose 'raw_json_str' is your JSON data as a string
-    # raw_json_str = <the big JSON you have>
-    # Or read from file:
-    # with open('my_sounding_data.json', 'r') as f:
-    #     raw_json_str = f.read()
 
-    # For demonstration, pretend we have the JSON in a variable:
     raw_json_str = """{ "hourly": { ... } }"""  # truncated for brevity
 
     # 1) Parse the JSON into a Python dict
@@ -161,9 +155,3 @@ if __name__ == "__main__":
     parsed_data = parse_json(data_dict, hour_index=0)
 
     plot_skewt_from_json(parsed_data)
-
-    
-    # 2) Plot for hour_index = 0 (2025-02-25T00:00)
-    
-    
-    #plot_skewt_from_json(data_dict, hour_index=0)
