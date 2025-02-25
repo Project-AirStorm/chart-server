@@ -1,41 +1,11 @@
-# import json
-# import matplotlib.pyplot as plt
-# import metpy.calc as mpcalc
-# from metpy.units import units
-# from metpy.plots import Skewt, Hodograph
-
-# def view_json():
-    
-#     #print keys
-#     with open('forecast.json', 'r') as file: 
-#         weather_data = json.load(file)
-#     for key in weather_data:
-#         print(key)
-    
-#     hourly_data = weather_data['hourly']
-#     for temps in hourly_data:
-#         print(temps)
-
-#     print(temperature_1000hpacv)
-#     #print(json.dumps(weather_data.hourly, indent=4))
-
-# view_json()
-
-# # def parse_json(json_data, hour_index=0):    
-    
-
 import json
-
-# First let's start with some simple imports
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-
 import metpy.calc as mpcalc
 from metpy.cbook import get_test_data
 from metpy.plots import add_metpy_logo, Hodograph, SkewT
 from metpy.units import units
-
 
 
 parameters = ['temperature', 'dew_point', 'wind_speed', 'wind_direction', 'geopotential_height']
@@ -127,14 +97,15 @@ def plot_skewt_from_json(parsed_data):
     skew.plot_mixing_lines()
 
     # -- Hodograph (optional)
-    ax_hod = plt.axes((0.7, 0.75, 0.2, 0.2))
-    h = Hodograph(ax_hod, component_range=80.)  # max range in knots
-    h.add_grid(increment=20)
-    h.plot(u, v)  # plot the wind profile
+    # ax_hod = plt.axes((0.7, 0.75, 0.2, 0.2))
+    # h = Hodograph(ax_hod, component_range=80.)  # max range in knots
+    # h.add_grid(increment=20)
+    # h.plot(u, v)  # plot the wind profile
+    # hodoleg = h.ax.legend(loc='upper left')
 
      # Add legends to the skew and hodo
     skewleg = skew.ax.legend(loc='upper left')
-    hodoleg = h.ax.legend(loc='upper left')
+
 
     # Show or save
     plt.show()
@@ -147,7 +118,7 @@ if __name__ == "__main__":
     raw_json_str = """{ "hourly": { ... } }"""  # truncated for brevity
 
     # 1) Parse the JSON into a Python dict
-    with open('forecast.json', 'r') as file:
+    with open('forecast-chicago.json', 'r') as file:
         data_dict = json.load(file)
 
 
