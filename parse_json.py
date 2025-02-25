@@ -1,0 +1,221 @@
+# import json
+# import matplotlib.pyplot as plt
+# import metpy.calc as mpcalc
+# from metpy.units import units
+# from metpy.plots import Skewt, Hodograph
+
+# def view_json():
+    
+#     #print keys
+#     with open('forecast.json', 'r') as file: 
+#         weather_data = json.load(file)
+#     for key in weather_data:
+#         print(key)
+    
+#     hourly_data = weather_data['hourly']
+#     for temps in hourly_data:
+#         print(temps)
+
+#     print(temperature_1000hpacv)
+#     #print(json.dumps(weather_data.hourly, indent=4))
+
+# view_json()
+
+# # def parse_json(json_data, hour_index=0):    
+    
+
+import json
+
+# First let's start with some simple imports
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+
+import metpy.calc as mpcalc
+from metpy.cbook import get_test_data
+from metpy.plots import add_metpy_logo, Hodograph, SkewT
+from metpy.units import units
+
+
+pressure_values = [1000, 850, 700, 600, 500, 400, 300, 250, 200, 150, 100]
+parameters = ['temperature', 'dew_point', 'wind_speed', 'wind_direction', 'geopotential_height']
+
+def parse_json(weather_json, hour_index):
+    # Iterate over array, if it contains null
+    
+    #print(weather_array)
+    hourly = weather_json['hourly']
+
+    #print(hrly["temperature_1000hPa"][hour_index])
+
+    '''
+        Prints the following: 
+        
+        temperature_1000hPa: 8.4
+        temperature_850hPa: 1.3
+        ,,,
+        wind_direction_700hPa: 240
+        wind_direction_600hPa: 233
+        wind_direction_500hPa: 224
+        ..
+    '''
+
+    for param in parameters:
+        for p in pressure_values: 
+            key = f"{param}_{p}hPa"
+            values = hourly.get(key, None)
+            # Check the lengths of values for a given weather variable is not greater than the number of hours passed in
+            # And if the value is none, print it 
+            if values is not None and len(values) > hour_index:
+                print(f"{key}: {values[hour_index]}")
+            else:
+                print(f"{key}: none")
+
+
+
+
+
+
+
+
+def plot_skewt_from_json(json_data, hour_index=0):
+    """
+    Given a JSON dict (like your Open-Meteo style data) and an hour index,
+    extract T, Td, wind, etc. for a set of pressure levels and plot a SkewT+Hodograph.
+    """
+
+    # 1. Define the pressure levels you have in your data (descending order)
+    #    Make sure these match your keys exactly!
+    pressure_values = [1000, 850, 700, 600, 500, 400, 300, 250, 200, 150, 100]
+    pressures = pressure_values * units.hPa
+
+    # 2. Extract the arrays for each parameter at the chosen hour
+    #    (Here we assume the arrays exist and each has at least hour_index elements.)
+    hrly = json_data["hourly"]
+
+    temp_array = [
+        hrly["temperature_1000hPa"][hour_index],
+        hrly["temperature_850hPa"][hour_index],
+        hrly["temperature_700hPa"][hour_index],
+        hrly["temperature_600hPa"][hour_index],
+        hrly["temperature_500hPa"][hour_index],
+        hrly["temperature_400hPa"][hour_index],
+        hrly["temperature_300hPa"][hour_index],
+        hrly["temperature_250hPa"][hour_index],
+        hrly["temperature_200hPa"][hour_index],
+        hrly["temperature_150hPa"][hour_index],
+        hrly["temperature_100hPa"][hour_index]
+    ] * units.degC  # attach degC unit
+
+    dew_point_array = [
+        hrly["dew_point_1000hPa"][hour_index],
+        hrly["dew_point_850hPa"][hour_index],
+        hrly["dew_point_700hPa"][hour_index],
+        hrly["dew_point_600hPa"][hour_index],
+        hrly["dew_point_500hPa"][hour_index],
+        hrly["dew_point_400hPa"][hour_index],
+        hrly["dew_point_300hPa"][hour_index],
+        hrly["dew_point_250hPa"][hour_index],
+        hrly["dew_point_200hPa"][hour_index],
+        hrly["dew_point_150hPa"][hour_index],
+        hrly["dew_point_100hPa"][hour_index]
+    ] * units.degC
+
+    # Wind speed in km/h. Convert to knots (or m/s) for typical meteorological usage
+    ws_kmhr = [
+        hrly["wind_speed_1000hPa"][hour_index],
+        hrly["wind_speed_850hPa"][hour_index],
+        hrly["wind_speed_700hPa"][hour_index],
+        hrly["wind_speed_600hPa"][hour_index],
+        hrly["wind_speed_500hPa"][hour_index],
+        hrly["wind_speed_400hPa"][hour_index],
+        hrly["wind_speed_300hPa"][hour_index],
+        hrly["wind_speed_250hPa"][hour_index],
+        hrly["wind_speed_200hPa"][hour_index],
+        hrly["wind_speed_150hPa"][hour_index],
+        hrly["wind_speed_100hPa"][hour_index]
+    ] * units('km/h')
+    ws = ws_kmhr.to('knots')
+
+    # Wind direction
+    wd = [
+        hrly["wind_direction_1000hPa"][hour_index],
+        hrly["wind_direction_850hPa"][hour_index],
+        hrly["wind_direction_700hPa"][hour_index],
+        hrly["wind_direction_600hPa"][hour_index],
+        hrly["wind_direction_500hPa"][hour_index],
+        hrly["wind_direction_400hPa"][hour_index],
+        hrly["wind_direction_300hPa"][hour_index],
+        hrly["wind_direction_250hPa"][hour_index],
+        hrly["wind_direction_200hPa"][hour_index],
+        hrly["wind_direction_150hPa"][hour_index],
+        hrly["wind_direction_100hPa"][hour_index]
+    ] * units.deg
+
+    # (Optional) Geopotential height
+    # z = [ hrly["geopotential_height_1000hPa"][hour_index], ... ] * units.m
+    # If you just need standard SkewT, height is optional.
+
+
+
+
+    # # Convert speed/direction to U/V
+    # u, v = mpcalc.wind_components(ws, wd)
+
+    # # -- Now set up the SkewT figure
+    # fig = plt.figure(figsize=(9, 9))
+    # add_metpy_logo(fig, 100, 80, size='small')
+    
+    # skew = SkewT(fig, rotation=45, rect=(0.1, 0.1, 0.55, 0.85))
+
+    # # -- Plot data
+    # skew.plot(pressures, temp_array, 'r')
+    # skew.plot(pressures, dew_point_array, 'g')
+    # skew.plot_barbs(pressures, u, v)
+
+    # # Set axis limits
+    # skew.ax.set_ylim(1000, 100)  # or auto
+    # skew.ax.set_xlim(-40, 30)    # adjust as needed
+
+    # # Add standard lines (optional)
+    # skew.plot_dry_adiabats()
+    # skew.plot_moist_adiabats()
+    # skew.plot_mixing_lines()
+
+    # # -- Hodograph (optional)
+    # # Create a new axes for the hodograph
+    # ax_hod = plt.axes((0.7, 0.75, 0.2, 0.2))
+    # h = Hodograph(ax_hod, component_range=80.)  # max range in knots
+    # h.add_grid(increment=20)
+    # h.plot(u, v)  # plot the wind profile
+
+    # # Show or save
+    # plt.show()
+    # # Or: plt.savefig("skewt_example.png", dpi=150)
+
+
+
+
+# Example usage:
+if __name__ == "__main__":
+    # Suppose 'raw_json_str' is your JSON data as a string
+    # raw_json_str = <the big JSON you have>
+    # Or read from file:
+    # with open('my_sounding_data.json', 'r') as f:
+    #     raw_json_str = f.read()
+
+    # For demonstration, pretend we have the JSON in a variable:
+    raw_json_str = """{ "hourly": { ... } }"""  # truncated for brevity
+
+    # 1) Parse the JSON into a Python dict
+    with open('forecast.json', 'r') as file:
+        data_dict = json.load(file)
+
+
+    parse_json(data_dict, 2)
+
+    
+    # 2) Plot for hour_index = 0 (2025-02-25T00:00)
+    
+    
+    #plot_skewt_from_json(data_dict, hour_index=0)
