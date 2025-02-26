@@ -1,5 +1,5 @@
 import json
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt, mpld3
 import numpy as np
 import pandas as pd
 import metpy.calc as mpcalc
@@ -57,7 +57,7 @@ def parse_json(weather_json, hour_index):
         "wind_spd_array": get_safe_values("wind_speed"),
         "wind_dir_array": get_safe_values("wind_direction")
     }
-    # print("Parsed Data:", parsed)  # Quick console log here
+    # print("Parsed Data:", parsed)  
     return parsed
 
 
@@ -80,7 +80,7 @@ def plot_skewt_from_json(parsed_data):
     fig = plt.figure(figsize=(9, 9))
     # add_metpy_logo(fig, 100, 80, size='small')
     
-    skew = SkewT(fig, rotation=45, rect=(0.1, 0.1, 0.55, 0.85))
+    skew = SkewT(fig, rotation=45, rect=(0.1, 0.1, 0.85, 0.85))
 
     # -- Plot data
     skew.plot(pressures, temp_array, 'r', label="Temperature")
@@ -115,14 +115,8 @@ def plot_skewt_from_json(parsed_data):
 # Example usage:
 if __name__ == "__main__":
 
-    raw_json_str = """{ "hourly": { ... } }"""  # truncated for brevity
-
-    # 1) Parse the JSON into a Python dict
     with open('forecast-chicago.json', 'r') as file:
-        data_dict = json.load(file)
+        JSON_sounding = json.load(file)
 
-
-    # parse_json(data_dict, 0)
-    parsed_data = parse_json(data_dict, hour_index=0)
-
+    parsed_data = parse_json(JSON_sounding, hour_index=0)
     plot_skewt_from_json(parsed_data)
