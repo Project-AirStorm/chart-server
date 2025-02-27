@@ -99,11 +99,11 @@ def plot_skewt_from_json(parsed_data, output_filename=None):
     skew.plot_mixing_lines()
 
     # -- Hodograph (optional)
-    # ax_hod = plt.axes((0.7, 0.75, 0.2, 0.2))
-    # h = Hodograph(ax_hod, component_range=80.)  # max range in knots
-    # h.add_grid(increment=20)
-    # h.plot(u, v)  # plot the wind profile
-    # hodoleg = h.ax.legend(loc='upper left')
+    ax_hod = plt.axes((0.7, 0.75, 0.2, 0.2))
+    h = Hodograph(ax_hod, component_range=80.)  # max range in knots
+    h.add_grid(increment=20)
+    h.plot(u, v)  # plot the wind profile
+    hodoleg = h.ax.legend(loc='upper left')
 
      # Add legends to the skew and hodo
     skewleg = skew.ax.legend(loc='upper left')
@@ -126,10 +126,10 @@ if __name__ == "__main__":
         os.makedirs(output_dir)
 
 
-    with open('forecast-chicago.json', 'r') as file:
+    with open('forecast-chicago-7-days.json', 'r') as file:
         JSON_sounding = json.load(file)
 
-    for hour in range(24):
+    for hour in range(168):
         parsed_data = parse_json(JSON_sounding, hour_index=hour)
         out_file = os.path.join(output_dir, f"skewt_hour_{hour}.svg")
         print(f"Generating: {out_file}")
