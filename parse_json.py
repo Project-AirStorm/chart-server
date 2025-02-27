@@ -1,4 +1,6 @@
 import json
+import os
+import time 
 import matplotlib.pyplot as plt, mpld3
 import numpy as np
 import pandas as pd
@@ -36,7 +38,7 @@ def parse_json(weather_json, hour_index):
             # Gets the list for given weather variable key ("temperature"), if its missings defaults to a list with np.nan 
             data_list = hourly.get(key, [np.nan])
 
-            print(f"{key}: {data_list}")
+            #print(f"{key}: {data_list}")
             
             # If the list exists but is too short or the value is None, use np.nan.
             if len (data_list) > hour_index and data_list[hour_index] is not None: 
@@ -62,7 +64,7 @@ def parse_json(weather_json, hour_index):
 
 
 
-def plot_skewt_from_json(parsed_data):
+def plot_skewt_from_json(parsed_data, output_filename=None):
     """
     Given parsed raw data arrays, attach units and plot the SkewT and Hodograph.
     """
@@ -107,16 +109,31 @@ def plot_skewt_from_json(parsed_data):
     skewleg = skew.ax.legend(loc='upper left')
 
 
+    plt.savefig(output_filename, format='svg', transparent=True)
+    plt.close(fig)
+    
     # Show or save
-    plt.show()
+    # plt.show()
     # Or: plt.savefig("skewt_example.png", dpi=150)
 
 
 # Example usage:
 if __name__ == "__main__":
+    start_time = time.time()
+
+    output_dir = "svg-dump"
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
 
     with open('forecast-chicago.json', 'r') as file:
         JSON_sounding = json.load(file)
 
-    parsed_data = parse_json(JSON_sounding, hour_index=0)
-    plot_skewt_from_json(parsed_data)
+    for hour in range(24):
+        parsed_data = parse_json(JSON_sounding, hour_index=hour)
+        out_file = os.path.join(output_dir, f"skewt_hour_{hour}.svg")
+        print(f"Generating: {out_file}")
+        #plot_skewt_from_json(parsed_data)
+        plot_skewt_from_json(parsed_data, output_filename=out_file)
+    end_time = time.time()
+    print(f"Elapsed time: {end_time - start_time:.2f} seconds")

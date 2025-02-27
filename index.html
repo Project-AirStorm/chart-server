@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Skew-T Diagram Viewer</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        margin: 20px;
+      }
+      #image-container {
+        margin-top: 20px;
+      }
+      #hour-display {
+        margin-top: 10px;
+        font-size: 1.2em;
+      }
+      img {
+        max-width: 90%;
+        height: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Skew-T Diagram Viewer</h1>
+    <input type="range" id="hourSlider" min="0" max="23" value="0" step="1">
+    <div id="hour-display">Hour: 0</div>
+    <div id="image-container">
+      <img id="skewtImage" src="svg-dump/skewt_hour_0.svg" alt="Skew-T Diagram">
+    </div>
+    <script>
+      const slider = document.getElementById('hourSlider');
+      const image = document.getElementById('skewtImage');
+      const hourDisplay = document.getElementById('hour-display');
+
+      slider.addEventListener('input', function() {
+        const hour = slider.value;
+        hourDisplay.textContent = "Hour: " + hour;
+        image.src = "svg-dump/skewt_hour_" + hour + ".svg";
+      });
+    </script>
+  </body>
+</html>
