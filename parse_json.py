@@ -82,6 +82,8 @@ def plot_skewt_from_json(parsed_data, output_filename=None):
     wind_dir = np.array(parsed_data["wind_dir_array"]) * units.deg
     wind_speed = wind_spd.to("knots")
 
+    
+
     # Convert speed/direction to U/V
     u, v = mpcalc.wind_components(wind_speed, wind_dir)
 
@@ -395,11 +397,6 @@ def plot_skewt_from_json(parsed_data, output_filename=None):
         
     plt.savefig(output_filename, format="svg", transparent=True)
     plt.close(fig)
-
-    # Show or save
-    # plt.show()
-    # Or: plt.savefig("skewt_example.png", dpi=150)
-
 
 
 if __name__ == "__main__":
