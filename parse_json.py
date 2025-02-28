@@ -81,11 +81,17 @@ def plot_skewt_from_json(parsed_data, output_filename=None):
     wind_spd = np.array(parsed_data["wind_spd_array"]) * units("km/h")
     wind_dir = np.array(parsed_data["wind_dir_array"]) * units.deg
     wind_speed = wind_spd.to("knots")
-
-    
-
+   
     # Convert speed/direction to U/V
     u, v = mpcalc.wind_components(wind_speed, wind_dir)
+    
+    ##############################################
+    
+    '''CONVECTIVE DIAGNOSTICS''' 
+    
+    ##############################################
+
+
 
     lcl_pressure, lcl_temperature = mpcalc.lcl(pressure[0], temp[0], dew_pt[0])
     prof = mpcalc.parcel_profile(pressure, temp[0], dew_pt[0]).to("degC")
@@ -140,8 +146,8 @@ def plot_skewt_from_json(parsed_data, output_filename=None):
     # Perform the calculation of supercell composite if an effective layer exists
     super_comp = mpcalc.supercell_composite(mucape, total_helicity3, bshear3)
 
-    fig = plt.figure(figsize=(18, 12))
-    fig.set_facecolor("#ffffff")
+    # fig = plt.figure(figsize=(18, 12))
+    # fig.set_facecolor("#ffffff")
     fig.patches.extend(
         [
             plt.Rectangle(
