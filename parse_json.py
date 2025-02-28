@@ -85,16 +85,179 @@ def plot_skewt_from_json(parsed_data, output_filename=None):
     # Convert speed/direction to U/V
     u, v = mpcalc.wind_components(wind_speed, wind_dir)
     
-    ##############################################
+    #############################################
+    '''SKEW T/HODOGRAPH'''
+    #############################################
     
-    '''CONVECTIVE DIAGNOSTICS''' 
+    fig = plt.figure(figsize=(18, 12))
+    skew = SkewT(fig, rotation=45, rect=(0.05, 0.05, 0.50, 0.90))
+
+    skew.ax.set_adjustable("datalim")
+    skew.ax.set_ylim(1000, 100)
+    skew.ax.set_xlim(-20, 30)
+
+    # Set some better labels than the default to increase readability
+    skew.ax.set_xlabel(str.upper(f"Temperature ({temp.units:~P})"), weight="bold")
+    skew.ax.set_ylabel(str.upper(f"Pressure ({pressure.units:~P})"), weight="bold")
+     
+    # Set the facecolor of the skew-t object and the figure to white
+    fig.set_facecolor("#ffffff")
+    skew.ax.set_facecolor("#ffffff")
     
-    ##############################################
+    # Make a shaded isotherm pattern.
+    x1 = np.linspace(-100, 40, 8)
+    x2 = np.linspace(-90, 50, 8)
+    y = [1100, 50]
+    for i in range(0, 8):
+        skew.shade_area(y=y, x1=x1[i], x2=x2[i], color="gray", alpha=0.02, zorder=1)
 
+    # Plot the data using normal plotting functions, in this case using
+    # log scaling in Y, as dictated by the typical meteorological plot  
+    skew.plot(pressure, temp, "r", lw=4, label="TEMPERATURE")
+    skew.plot(pressure, dew_pt, "g", lw=4, label="DEWPOINT")    
+     
 
-
+    # Resample the wind barbs for a cleaner output with increased readability.
+    interval = np.logspace(2, 3, 40) * units.hPa
+    idx = mpcalc.resample_nn_1d(pressure, interval)
+    skew.plot_barbs(pressure=pressure[idx], u=u[idx], v=v[idx])
+     
+    # Provide basic adjustments to linewidth and alpha to increase readability
+    # ADd a matplotlib axvline to highlight the 0-degree isotherm
+    skew.ax.axvline(0 * units.degC, linestyle="--", color="blue", alpha=0.3)
+    skew.plot_dry_adiabats(lw=1, alpha=0.3)
+    skew.plot_moist_adiabats(lw=1, alpha=0.3)
+    skew.plot_mixing_lines(lw=1, alpha=0.3) 
+    
+    # Calculate LCL height and plot as a black dot. Because `p`'s first value is
+    # ~1000 mb and its last value is ~250 mb, the `0` index is selected for
+    # `pressure`, `temp`, and `dew_pt` to lift the parcel from the surface. If `pressure` was inverted,
+    # i.e. start from a low value, 250 mb, to a high value, 1000 mb, the `-1` index
+    # should be selected.
     lcl_pressure, lcl_temperature = mpcalc.lcl(pressure[0], temp[0], dew_pt[0])
+    skew.plot(lcl_pressure, lcl_temperature, "ko", markerfacecolor="black")
+    
+    
+    # Calculate full parcel profile and add to plot as black line
     prof = mpcalc.parcel_profile(pressure, temp[0], dew_pt[0]).to("degC")
+    skew.plot(pressure, prof, "k", linewidth=2, label="SB PARCEL PATH")
+    
+    # Shade areas of CAPE and CIN
+    skew.shade_cin(pressure, temp, prof, dew_pt, alpha=0.2, label="SBCIN")
+    skew.shade_cape(pressure, temp, prof, alpha=0.2, label="SBCAPE")
+    
+    
+    # Create a hodograph object
+    hodo_ax = plt.axes((0.48, 0.45, 0.5, 0.5))
+    h = Hodograph(hodo_ax, component_range=80.0)
+    
+    # Add two separate grid increments for readability
+    h.add_grid(increment=20, ls="-", lw=1.5, alpha=0.5)
+    h.add_grid(increment=10, ls="--", lw=1, alpha=0.2)
+        
+    # Removing tick marks, tick labels, and axis labels for cleaner look
+    h.ax.set_box_aspect(1)
+    h.ax.set_yticklabels([])
+    h.ax.set_xticklabels([])
+    h.ax.set_xticks([])
+    h.ax.set_yticks([])
+    h.ax.set_xlabel(" ")
+    h.ax.set_ylabel(" ")
+    
+    # Adds tick marks to the inside of the hodograph plot to increase readability
+    plt.xticks(np.arange(0, 0, 1))
+    plt.yticks(np.arange(0, 0, 1))
+    for i in range(10, 120, 10):
+        h.ax.annotate(
+            str(i),
+            (i, 0),
+            xytext=(0, 2),
+            textcoords="offset pixels",
+            clip_on=True,
+            fontsize=10,
+            weight="bold",
+            alpha=0.3,
+            zorder=0,
+        )
+    for i in range(10, 120, 10):
+        h.ax.annotate(
+            str(i),
+            (0, i),
+            xytext=(0, 2),
+            textcoords="offset pixels",
+            clip_on=True,
+            fontsize=10,
+            weight="bold",
+            alpha=0.3,
+            zorder=0,
+    )
+    
+    # plot the hodograph itself, using plot_colormapped, colored
+    # by height
+    h.plot_colormapped(u, v, c=height, linewidth=6, label="0-12km WIND")
+    # compute Bunkers storm motion so we can plot it on the hodograph!
+    RM, LM, MW = mpcalc.bunkers_storm_motion(pressure, u, v, height)
+    h.ax.text(
+        (RM[0].m + 0.5),
+        (RM[1].m - 0.5),
+        "RM",
+        weight="bold",
+        ha="left",
+        fontsize=13,
+        alpha=0.6,
+    )
+    h.ax.text(
+        (LM[0].m + 0.5),
+        (LM[1].m - 0.5),
+        "LM",
+        weight="bold",
+        ha="left",
+        fontsize=13,
+        alpha=0.6,
+    )
+    h.ax.text(
+        (MW[0].m + 0.5),
+        (MW[1].m - 0.5),
+        "MW",
+        weight="bold",
+        ha="left",
+        fontsize=13,
+        alpha=0.6,
+    )
+    h.ax.arrow(
+        0,
+        0,
+        RM[0].m - 0.3,
+        RM[1].m - 0.3,
+        linewidth=2,
+        color="black",
+        alpha=0.2,
+        label="Bunkers RM Vector",
+        length_includes_head=True,
+        head_width=2,
+    )
+
+    # Add a simple rectangle using Matplotlib's 'patches'
+    fig.patches.extend(
+    [
+        plt.Rectangle(
+            (0.563, 0.05),
+            0.334,
+            0.37,
+            edgecolor="black",
+            facecolor="white",
+            linewidth=1,
+            alpha=1,
+            transform=fig.transFigure,
+            figure=fig,
+        )
+    ]
+    )
+
+     
+    ##############################################
+    '''CONVECTIVE DIAGNOSTICS'''   
+    ##############################################
 
     # Now let's take a moment to calculate some simple severe-weather parameters using
     # metpy's calculations
@@ -148,21 +311,7 @@ def plot_skewt_from_json(parsed_data, output_filename=None):
 
     # fig = plt.figure(figsize=(18, 12))
     # fig.set_facecolor("#ffffff")
-    fig.patches.extend(
-        [
-            plt.Rectangle(
-                (0.563, 0.05),
-                0.334,
-                0.37,
-                edgecolor="black",
-                facecolor="white",
-                linewidth=1,
-                alpha=1,
-                transform=fig.transFigure,
-                figure=fig,
-            )
-        ]
-    )
+
 
     # There is a lot we can do with this data operationally, so let's plot some of
     # these values right on the plot, in the box we made
@@ -400,6 +549,10 @@ def plot_skewt_from_json(parsed_data, output_filename=None):
         fontsize=20,
         ha="center",
     )
+    ####################################################
+    # Add legends to the skew and hodo
+    skewleg = skew.ax.legend(loc="upper left")
+    hodoleg = h.ax.legend(loc="upper left")
         
     plt.savefig(output_filename, format="svg", transparent=True)
     plt.close(fig)
