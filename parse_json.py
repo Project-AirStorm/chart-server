@@ -64,7 +64,7 @@ def parse_json(weather_json, hour_index):
         "dew_pt_array": get_safe_values("dew_point"),
         "wind_spd_array": get_safe_values("wind_speed"),
         "wind_dir_array": get_safe_values("wind_direction"),
-        "height": get_safe_values("geopotential_height"),
+        "height_array": get_safe_values("geopotential_height"),
     }
     # print("Parsed Data:", parsed)
     return parsed
@@ -74,60 +74,60 @@ def plot_skewt_from_json(parsed_data, output_filename=None):
     """
     Given parsed raw data arrays, attach units and plot the SkewT and Hodograph.
     """
-    p = np.array(parsed_data["pressure_values"]) * units.hPa
-    T = np.array(parsed_data["temp_array"]) * units.degC
-    Td = np.array(parsed_data["dew_pt_array"]) * units.degC
-    z = np.array(parsed_data["height"]) * units.m
-    wind_spd_array = np.array(parsed_data["wind_spd_array"]) * units("km/h")
-    wind_direction = np.array(parsed_data["wind_dir_array"]) * units.deg
-    wind_speed = wind_spd_array.to("knots")
+    pressure = np.array(parsed_data["pressure_values"]) * units.hPa
+    temp = np.array(parsed_data["temp_array"]) * units.degC
+    dew_pt = np.array(parsed_data["dew_pt_array"]) * units.degC
+    height = np.array(parsed_data["height_array"]) * units.m
+    wind_spd = np.array(parsed_data["wind_spd_array"]) * units("km/h")
+    wind_dir = np.array(parsed_data["wind_dir_array"]) * units.deg
+    wind_speed = wind_spd.to("knots")
 
     # Convert speed/direction to U/V
-    u, v = mpcalc.wind_components(wind_speed, wind_direction)
+    u, v = mpcalc.wind_components(wind_speed, wind_dir)
 
-    lcl_pressure, lcl_temperature = mpcalc.lcl(p[0], T[0], Td[0])
-    prof = mpcalc.parcel_profile(p, T[0], Td[0]).to("degC")
+    lcl_pressure, lcl_temperature = mpcalc.lcl(pressure[0], temp[0], dew_pt[0])
+    prof = mpcalc.parcel_profile(pressure, temp[0], dew_pt[0]).to("degC")
 
     # Now let's take a moment to calculate some simple severe-weather parameters using
     # metpy's calculations
     # Here are some classic severe parameters!
-    kindex = mpcalc.k_index(p, T, Td)
-    total_totals = mpcalc.total_totals_index(p, T, Td)
+    kindex = mpcalc.k_index(pressure, temp, dew_pt)
+    total_totals = mpcalc.total_totals_index(pressure, temp, dew_pt)
 
     # mixed layer parcel properties!
-    ml_t, ml_td = mpcalc.mixed_layer(p, T, Td, depth=50 * units.hPa)
-    ml_p, _, _ = mpcalc.mixed_parcel(p, T, Td, depth=50 * units.hPa)
-    mlcape, mlcin = mpcalc.mixed_layer_cape_cin(p, T, prof, depth=50 * units.hPa)
+    ml_t, ml_td = mpcalc.mixed_layer(pressure, temp, dew_pt, depth=50 * units.hPa)
+    ml_p, _, _ = mpcalc.mixed_parcel(pressure, temp, dew_pt, depth=50 * units.hPa)
+    mlcape, mlcin = mpcalc.mixed_layer_cape_cin(pressure, temp, prof, depth=50 * units.hPa)
 
     # most unstable parcel properties!
-    mu_p, mu_t, mu_td, _ = mpcalc.most_unstable_parcel(p, T, Td, depth=50 * units.hPa)
-    mucape, mucin = mpcalc.most_unstable_cape_cin(p, T, Td, depth=50 * units.hPa)
+    mu_p, mu_t, mu_td, _ = mpcalc.most_unstable_parcel(pressure, temp, dew_pt, depth=50 * units.hPa)
+    mucape, mucin = mpcalc.most_unstable_cape_cin(pressure, temp, dew_pt, depth=50 * units.hPa)
 
     # Estimate height of LCL in meters from hydrostatic thickness (for sig_tor)
-    new_p = np.append(p[p > lcl_pressure], lcl_pressure)
-    new_t = np.append(T[p > lcl_pressure], lcl_temperature)
+    new_p = np.append(pressure[pressure > lcl_pressure], lcl_pressure)
+    new_t = np.append(temp[pressure > lcl_pressure], lcl_temperature)
     lcl_height = mpcalc.thickness_hydrostatic(new_p, new_t)
 
     # Compute Surface-based CAPE
-    sbcape, sbcin = mpcalc.surface_based_cape_cin(p, T, Td)
+    sbcape, sbcin = mpcalc.surface_based_cape_cin(pressure, temp, dew_pt)
     # Compute SRH
-    (u_storm, v_storm), *_ = mpcalc.bunkers_storm_motion(p, u, v, z)
+    (u_storm, v_storm), *_ = mpcalc.bunkers_storm_motion(pressure, u, v, height)
     *_, total_helicity1 = mpcalc.storm_relative_helicity(
-        z, u, v, depth=1 * units.km, storm_u=u_storm, storm_v=v_storm
+        height, u, v, depth=1 * units.km, storm_u=u_storm, storm_v=v_storm
     )
     *_, total_helicity3 = mpcalc.storm_relative_helicity(
-        z, u, v, depth=3 * units.km, storm_u=u_storm, storm_v=v_storm
+        height, u, v, depth=3 * units.km, storm_u=u_storm, storm_v=v_storm
     )
     *_, total_helicity6 = mpcalc.storm_relative_helicity(
-        z, u, v, depth=6 * units.km, storm_u=u_storm, storm_v=v_storm
+        height, u, v, depth=6 * units.km, storm_u=u_storm, storm_v=v_storm
     )
 
     # Copmute Bulk Shear components and then magnitude
-    ubshr1, vbshr1 = mpcalc.bulk_shear(p, u, v, height=z, depth=1 * units.km)
+    ubshr1, vbshr1 = mpcalc.bulk_shear(pressure, u, v, height=height, depth=1 * units.km)
     bshear1 = mpcalc.wind_speed(ubshr1, vbshr1)
-    ubshr3, vbshr3 = mpcalc.bulk_shear(p, u, v, height=z, depth=3 * units.km)
+    ubshr3, vbshr3 = mpcalc.bulk_shear(pressure, u, v, height=height, depth=3 * units.km)
     bshear3 = mpcalc.wind_speed(ubshr3, vbshr3)
-    ubshr6, vbshr6 = mpcalc.bulk_shear(p, u, v, height=z, depth=6 * units.km)
+    ubshr6, vbshr6 = mpcalc.bulk_shear(pressure, u, v, height=height, depth=6 * units.km)
     bshear6 = mpcalc.wind_speed(ubshr6, vbshr6)
 
     # Use all computed pieces to calculate the Significant Tornado parameter
