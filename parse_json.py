@@ -86,7 +86,7 @@ def plot_skewt_from_json(parsed_data, output_filename=None):
     u, v = mpcalc.wind_components(wind_speed, wind_dir)
     
     #############################################
-    '''SKEW T/HODOGRAPH'''
+    '''SKEW T'''
     #############################################
     
     fig = plt.figure(figsize=(18, 12))
@@ -146,29 +146,36 @@ def plot_skewt_from_json(parsed_data, output_filename=None):
     skew.shade_cin(pressure, temp, prof, dew_pt, alpha=0.2, label="SBCIN")
     skew.shade_cape(pressure, temp, prof, alpha=0.2, label="SBCAPE")
     
+    #############################################
+    '''HODOGRAPH'''
+    #############################################
     
     # Create a hodograph object
     hodo_ax = plt.axes((0.48, 0.45, 0.5, 0.5))
-    h = Hodograph(hodo_ax, component_range=80.0)
+    hodograph = Hodograph(hodo_ax, component_range=80.0) #was 80
+
+    hodograph.ax.set_xlim(-90, 90)
+    hodograph.ax.set_ylim(-90, 90)
+    hodograph.ax.set_aspect('equal', adjustable='box')
     
     # Add two separate grid increments for readability
-    h.add_grid(increment=20, ls="-", lw=1.5, alpha=0.5)
-    h.add_grid(increment=10, ls="--", lw=1, alpha=0.2)
+    hodograph.add_grid(increment=20, ls="-", lw=1.5, alpha=0.5)
+    hodograph.add_grid(increment=10, ls="--", lw=1, alpha=0.2)
         
     # Removing tick marks, tick labels, and axis labels for cleaner look
-    h.ax.set_box_aspect(1)
-    h.ax.set_yticklabels([])
-    h.ax.set_xticklabels([])
-    h.ax.set_xticks([])
-    h.ax.set_yticks([])
-    h.ax.set_xlabel(" ")
-    h.ax.set_ylabel(" ")
+    hodograph.ax.set_box_aspect(1)
+    hodograph.ax.set_yticklabels([])
+    hodograph.ax.set_xticklabels([])
+    hodograph.ax.set_xticks([])
+    hodograph.ax.set_yticks([])
+    hodograph.ax.set_xlabel(" ")
+    hodograph.ax.set_ylabel(" ")
     
     # Adds tick marks to the inside of the hodograph plot to increase readability
     plt.xticks(np.arange(0, 0, 1))
     plt.yticks(np.arange(0, 0, 1))
     for i in range(10, 120, 10):
-        h.ax.annotate(
+        hodograph.ax.annotate(
             str(i),
             (i, 0),
             xytext=(0, 2),
@@ -180,7 +187,7 @@ def plot_skewt_from_json(parsed_data, output_filename=None):
             zorder=0,
         )
     for i in range(10, 120, 10):
-        h.ax.annotate(
+        hodograph.ax.annotate(
             str(i),
             (0, i),
             xytext=(0, 2),
@@ -194,10 +201,10 @@ def plot_skewt_from_json(parsed_data, output_filename=None):
     
     # plot the hodograph itself, using plot_colormapped, colored
     # by height
-    h.plot_colormapped(u, v, c=height, linewidth=6, label="0-12km WIND")
+    hodograph.plot_colormapped(u, v, c=height, linewidth=3, label="0-12km WIND")
     # compute Bunkers storm motion so we can plot it on the hodograph!
     RM, LM, MW = mpcalc.bunkers_storm_motion(pressure, u, v, height)
-    h.ax.text(
+    hodograph.ax.text(
         (RM[0].m + 0.5),
         (RM[1].m - 0.5),
         "RM",
@@ -206,7 +213,7 @@ def plot_skewt_from_json(parsed_data, output_filename=None):
         fontsize=13,
         alpha=0.6,
     )
-    h.ax.text(
+    hodograph.ax.text(
         (LM[0].m + 0.5),
         (LM[1].m - 0.5),
         "LM",
@@ -215,7 +222,7 @@ def plot_skewt_from_json(parsed_data, output_filename=None):
         fontsize=13,
         alpha=0.6,
     )
-    h.ax.text(
+    hodograph.ax.text(
         (MW[0].m + 0.5),
         (MW[1].m - 0.5),
         "MW",
@@ -224,7 +231,7 @@ def plot_skewt_from_json(parsed_data, output_filename=None):
         fontsize=13,
         alpha=0.6,
     )
-    h.ax.arrow(
+    hodograph.ax.arrow(
         0,
         0,
         RM[0].m - 0.3,
@@ -236,7 +243,11 @@ def plot_skewt_from_json(parsed_data, output_filename=None):
         length_includes_head=True,
         head_width=2,
     )
-
+     
+    ##############################################
+    '''CONVECTIVE DIAGNOSTICS'''   
+    ##############################################
+    
     # Add a simple rectangle using Matplotlib's 'patches'
     fig.patches.extend(
     [
@@ -253,12 +264,7 @@ def plot_skewt_from_json(parsed_data, output_filename=None):
         )
     ]
     )
-
-     
-    ##############################################
-    '''CONVECTIVE DIAGNOSTICS'''   
-    ##############################################
-
+    
     # Now let's take a moment to calculate some simple severe-weather parameters using
     # metpy's calculations
     # Here are some classic severe parameters!
@@ -552,19 +558,13 @@ def plot_skewt_from_json(parsed_data, output_filename=None):
     ####################################################
     # Add legends to the skew and hodo
     skewleg = skew.ax.legend(loc="upper left")
-    hodoleg = h.ax.legend(loc="upper left")
+    hodoleg = hodograph.ax.legend(loc="upper left")
         
     plt.savefig(output_filename, format="svg", transparent=True)
     plt.close(fig)
 
 
 if __name__ == "__main__":
-
-    # with open("data/forecast-okc-7-days.json", "r") as file:
-    #     JSON_sounding = json.load(file)
-
-    # parsed_data = parse_json(JSON_sounding, hour_index=0)
-    # plot_skewt_from_json(parsed_data, output_filename=None)
 
     start_time = time.time()
 
@@ -575,7 +575,7 @@ if __name__ == "__main__":
     with open("data/forecast-shreveport-7-day.json", "r") as file:
         JSON_sounding = json.load(file)
 
-    for hour in range(167):
+    for hour in range(166):
         parsed_data = parse_json(JSON_sounding, hour_index=hour)
         out_file = os.path.join(output_dir, f"skewt_hour_{hour}.svg")
         print(f"Generating: {out_file}")
