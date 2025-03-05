@@ -1,12 +1,10 @@
 import json
 import os
 import time
-import matplotlib.pyplot as plt, mpld3
+import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 import metpy.calc as mpcalc
-from metpy.cbook import get_test_data
-from metpy.plots import add_metpy_logo, Hodograph, SkewT
+from metpy.plots import Hodograph, SkewT
 from metpy.units import units
 
 
@@ -571,9 +569,8 @@ def plot_skewt_from_json(parsed_data, output_filename=None):
 
 
 if __name__ == "__main__":
-
     start_time = time.time()
-
+    
     output_dir = "svg-dump"
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
@@ -581,7 +578,7 @@ if __name__ == "__main__":
     with open("data/forecast-shreveport-7-day.json", "r") as file:
         JSON_sounding = json.load(file)
 
-    for hour in range(167):
+    for hour in range(23):
         parsed_data = parse_json(JSON_sounding, hour_index=hour)
         out_file = os.path.join(output_dir, f"skewt_hour_{hour}.svg")
         print(f"Generating: {out_file}")
