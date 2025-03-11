@@ -6,17 +6,7 @@ import boto3
 from flask import Flask, request, jsonify
 import io
 
-# import matplotlib
-
-# matplotlib.use("Agg")
-# import matplotlib.pyplot as plt
-# import numpy as np
-# import metpy.calc as mpcalc
-# from metpy.plots import Hodograph, SkewT
-# from metpy.units import units
-
 from generate_skew import parse_json, plot_skewt
-
 
 app = Flask(__name__)
 
@@ -24,7 +14,6 @@ app = Flask(__name__)
 s3_client = boto3.client("s3", region_name="us-east-1")
 BUCKET_NAME = "meteo-charts"  # S3 bucket
 FOLDER_NAME = "skewt-svg-dumps"  # S3 bucket folder
-
 
 @app.route("/generate-skew", methods=["GET"])
 def generate_skew():
@@ -35,6 +24,7 @@ def generate_skew():
     forecast_days = request.args.get("days", type=int)
     lat = request.args.get("lat", type=float)
     lon = request.args.get("lon", type=float)
+    user_id = request.args.get("user_id", default="clerk-user") #clerk user
 
     # Bomb out if a bad GET request was sent
     if forecast_days is None or lat is None or lon is None:
@@ -142,7 +132,11 @@ def generate_skew():
         svg_data = plot_skewt(parsed_data, output_filename=None)
 
         # Now upload the bytes to S3
-        out_file = f"{'skewt-svg-dumps'}/skewt_{lat}_{lon}_hour_{hour}.svg"
+
+        # out_file = f"{'skewt-svg-dumps'}/skewt_{lat}_{lon}_hour_{hour}.svg"
+        #out_file = f"{'skewt-svg-dumps'}/skewt_{lat}_{lon}_hour_{hour}_user_{user_id}.svg"
+        out_file = f"skewt-svg-dumps_{user_id}/skewt_{lat}_{lon}_hour_{hour}.svg"
+
         try:
             s3_client.put_object(
                 Bucket=BUCKET_NAME,
@@ -155,10 +149,12 @@ def generate_skew():
             print(f"Uploaded {out_file} to S3 successfully.")
             file_url = f"https://{BUCKET_NAME}.s3.amazonaws.com/{out_file}"
             all_s3_urls.append(file_url)
+        
         except Exception as e:
             print(f"Error uploading to S3: {e}")
 
     end_time = time.time()
+   
     print(f"Elapsed time: {end_time - start_time:.2f} seconds")
 
     # Return JSON respone, describes where the files are stored

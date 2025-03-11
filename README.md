@@ -10,3 +10,8 @@ aws s3 rm s3://meteo-charts/skewt-svg-dumps/ --recursive
 
 # Download all SVGs from bucket (local testing)
 aws s3 sync s3://meteo-charts/skewt-svg-dumps svg-dump/
+
+# Test URLs (GET request)
+http://localhost:5000/generate-skew?days=1&lat=32.52&lon=-93.75&user_id=user_2sirXuIdmQh7eiB3GwHxZlcQYbI
+http://localhost:5000/generate-skew?days=1&lat=32.52&lon=-93.75&user_id=user_2seeKmUaxI6vzlvi1jzLguWFQZ8
+
