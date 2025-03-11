@@ -1,16 +1,18 @@
 import os
 import io
 import time
-import json
 import requests
 import boto3
 from flask import Flask, request, jsonify
 import io
+import matplotlib 
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import metpy.calc as mpcalc
 from metpy.plots import Hodograph, SkewT
 from metpy.units import units
+
 from generate_skew import parse_json
 
 
@@ -18,12 +20,8 @@ app = Flask(__name__)
 
 # Initialize S3 Stuff
 s3_client = boto3.client("s3", region_name="us-east-1")
-BUCKET_NAME = "meteo-charts"  # your bucket name
-FOLDER_NAME = "skewt-svg-dumps"  # folder inside the bucket (if desired
-
-
-
-
+BUCKET_NAME = "meteo-charts"  # S3 bucket
+FOLDER_NAME = "skewt-svg-dumps"  # S3 bucket folder
 
 
 def plot_skewt(parsed_data, output_filename=None):

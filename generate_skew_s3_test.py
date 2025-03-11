@@ -566,7 +566,7 @@ def plot_skewt_from_json(parsed_data, output_filename=None):
     skewleg = skew.ax.legend(loc="upper left")
     hodoleg = hodograph.ax.legend(loc="upper left")
 
-    
+    # Uppload SVGs as bytes 
     svg_buffer = io.BytesIO()
     plt.savefig(svg_buffer, format="svg", transparent=True)
     plt.close(fig)
