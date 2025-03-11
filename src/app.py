@@ -1,10 +1,8 @@
-import os
-import io
+import datetime
 import time
 import requests
 import boto3
 from flask import Flask, request, jsonify
-import io
 
 from generate_skew import parse_json, plot_skewt
 
@@ -15,6 +13,7 @@ s3_client = boto3.client("s3", region_name="us-east-1")
 BUCKET_NAME = "meteo-charts"  # S3 bucket
 FOLDER_NAME = "skewt-svg-dumps"  # S3 bucket folder
 
+
 @app.route("/generate-skew", methods=["GET"])
 def generate_skew():
     """
@@ -24,11 +23,16 @@ def generate_skew():
     forecast_days = request.args.get("days", type=int)
     lat = request.args.get("lat", type=float)
     lon = request.args.get("lon", type=float)
-    user_id = request.args.get("user_id", default="clerk-user") #clerk user
+    user_id = request.args.get("user_id", default="clerk-user")  # clerk user
 
     # Bomb out if a bad GET request was sent
     if forecast_days is None or lat is None or lon is None:
         return jsonify({"error": "Must provide 'days', 'lat', and 'lon'"}), 400
+
+    # Build a subfolder name using chart_count + timestamp
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    # e.g. "chart_1_2025-03-11_10-39-07"
+    chart_folder = f"chart_{timestamp}"
 
     # 2. Build the Open-Meteo API URL based on these params
     url = (
@@ -128,33 +132,35 @@ def generate_skew():
         parsed_data = parse_json(weather_json, hour_index=hour)
 
         # The plot_skewt_from_json can accept a file path or file-like.
-        # We can save directly to the BytesIO, but we need a small tweak:
         svg_data = plot_skewt(parsed_data, output_filename=None)
 
         # Now upload the bytes to S3
 
-        # out_file = f"{'skewt-svg-dumps'}/skewt_{lat}_{lon}_hour_{hour}.svg"
-        #out_file = f"{'skewt-svg-dumps'}/skewt_{lat}_{lon}_hour_{hour}_user_{user_id}.svg"
-        out_file = f"skewt-svg-dumps_{user_id}/skewt_{lat}_{lon}_hour_{hour}.svg"
+        s3_key = (
+            f"skewt-diagrams/"
+            f"skewt-dumps_{user_id}/"
+            f"{chart_folder}/"
+            f"skewt_hour_{hour:03d}_lat_{lat}_long_{lon}.svg"
+        )
 
         try:
             s3_client.put_object(
                 Bucket=BUCKET_NAME,
-                Key=out_file,
+                Key=s3_key,
                 Body=svg_data,
                 ContentType="image/svg+xml",
             )
             # Construct a URL to the uploaded file (if the bucket is public or has a CloudFront distribution, etc.)
             # For a non-public bucket, you’ll have to generate presigned URLs or set the ACL accordingly.
-            print(f"Uploaded {out_file} to S3 successfully.")
-            file_url = f"https://{BUCKET_NAME}.s3.amazonaws.com/{out_file}"
+            print(f"Uploaded {s3_key} to S3 successfully.")
+            file_url = f"https://{BUCKET_NAME}.s3.amazonaws.com/{s3_key}"
             all_s3_urls.append(file_url)
-        
+
         except Exception as e:
             print(f"Error uploading to S3: {e}")
 
     end_time = time.time()
-   
+
     print(f"Elapsed time: {end_time - start_time:.2f} seconds")
 
     # Return JSON respone, describes where the files are stored
@@ -162,6 +168,8 @@ def generate_skew():
         {
             "latitude": lat,
             "longitude": lon,
+            "user_id": user_id,
+            "chart_folder": chart_folder,
             "days_requested": forecast_days,
             "s3_files": all_s3_urls,
             "message": "SkewT images generated and uploaded to S3.",

@@ -6,7 +6,7 @@ https://api.open-meteo.com/v1/forecast?latitude=32.52&longitude=-93.75&hourly=te
 python3 -m http.server 8000
 
 # Delete all from S3 bucket
-aws s3 rm s3://meteo-charts/skewt-svg-dumps/ --recursive
+aws s3 rm s3://meteo-charts/skewt-diagrams --recursive
 
 # Download all SVGs from bucket (local testing)
 aws s3 sync s3://meteo-charts/skewt-svg-dumps svg-dump/
@@ -16,4 +16,6 @@ http://localhost:5000/generate-skew?days=1&lat=32.52&lon=-93.75&user_id=user_2si
 http://localhost:5000/generate-skew?days=1&lat=32.52&lon=-93.75&user_id=user_2seeKmUaxI6vzlvi1jzLguWFQZ8
 
 curl "http://localhost:5000/generate-skew?days=1&lat=32.52&lon=-93.75&user_id=user_2sirXuIdmQh7eiB3GwHxZlcQYbI"
+curl "http://localhost:5000/generate-skew?days=1&lat=32.52&lon=-93.75&user_id=user_2seeKmUaxI6vzlvi1jzLguWFQZ8"
+
 
