@@ -1,9 +1,12 @@
 import io
+import matplotlib
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import metpy.calc as mpcalc
 from metpy.plots import Hodograph, SkewT
 from metpy.units import units
+
 parameters = [
     "temperature",
     "dew_point",
@@ -91,8 +94,12 @@ def plot_skewt(parsed_data, output_filename=None):
     skew.ax.set_xlim(-20, 30)
 
     # Set some better labels than the default to increase readability
-    skew.ax.set_xlabel(str.upper(f"Temperature ({temp.units:~P})"), weight="bold", fontsize=12)
-    skew.ax.set_ylabel(str.upper(f"Pressure ({pressure.units:~P})"), weight="bold", fontsize=12)
+    skew.ax.set_xlabel(
+        str.upper(f"Temperature ({temp.units:~P})"), weight="bold", fontsize=12
+    )
+    skew.ax.set_ylabel(
+        str.upper(f"Pressure ({pressure.units:~P})"), weight="bold", fontsize=12
+    )
 
     # Set the facecolor of the skew-t object and the figure to white
     fig.set_facecolor("#ffffff")
@@ -559,12 +566,9 @@ def plot_skewt(parsed_data, output_filename=None):
     skewleg = skew.ax.legend(loc="upper left")
     hodoleg = hodograph.ax.legend(loc="upper left")
 
-    
     svg_buffer = io.BytesIO()
     plt.savefig(svg_buffer, format="svg", transparent=True)
     plt.close(fig)
     svg_buffer.seek(0)
 
     return svg_buffer.getvalue()
-
-

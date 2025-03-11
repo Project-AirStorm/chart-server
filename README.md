@@ -8,5 +8,5 @@ python3 -m http.server 8000
 # Delete all from S3 bucket
 aws s3 rm s3://meteo-charts/skewt-svg-dumps/ --recursive
 
-# Download all SVGs from bucket
-aws s3 sync s3://meteo-charts/skewt-svg-dumps local-svg/
+# Download all SVGs from bucket (local testing)
+aws s3 sync s3://meteo-charts/skewt-svg-dumps svg-dump/

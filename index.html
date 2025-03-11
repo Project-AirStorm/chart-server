@@ -97,7 +97,8 @@
   <h1>Shreveport 7 Day Forecast</h1>
 
   <div id="image-container">
-    <img id="skewtImage" src="svg-dump/skewt_hour_0.svg" alt="Skew-T Diagram">
+    <!-- Set the default src using the fixed lat, lon, and hour 0 -->
+    <img id="skewtImage" src="svg-dump/skewt_32.52_-93.75_hour_0.svg" alt="Skew-T Diagram">
   </div>
 
   <input type="range" id="hourSlider" min="0" max="167" value="0" step="1">
@@ -106,6 +107,10 @@
     &copy; 2025 Project-AirStorm
   </footer>
   <script>
+    // Set these values as needed or obtain them dynamically
+    const lat = 32.52;
+    const lon = -93.75;
+
     const slider = document.getElementById('hourSlider');
     const image = document.getElementById('skewtImage');
     const hourDisplay = document.getElementById('hour-display');
@@ -113,7 +118,8 @@
     slider.addEventListener('input', function () {
       const hour = slider.value;
       hourDisplay.textContent = "Hour: " + hour;
-      image.src = "svg-dump/skewt_hour_" + hour + ".svg";
+      // Construct the file name dynamically using the lat and lon values.
+      image.src = "svg-dump/skewt_" + lat + "_" + lon + "_hour_" + hour + ".svg";
     });
   </script>
 </body>
