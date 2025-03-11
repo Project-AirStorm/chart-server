@@ -5,7 +5,8 @@ import requests
 import boto3
 from flask import Flask, request, jsonify
 import io
-import matplotlib 
+import matplotlib
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
@@ -51,8 +52,12 @@ def plot_skewt(parsed_data, output_filename=None):
     skew.ax.set_xlim(-20, 30)
 
     # Set some better labels than the default to increase readability
-    skew.ax.set_xlabel(str.upper(f"Temperature ({temp.units:~P})"), weight="bold", fontsize=12)
-    skew.ax.set_ylabel(str.upper(f"Pressure ({pressure.units:~P})"), weight="bold", fontsize=12)
+    skew.ax.set_xlabel(
+        str.upper(f"Temperature ({temp.units:~P})"), weight="bold", fontsize=12
+    )
+    skew.ax.set_ylabel(
+        str.upper(f"Pressure ({pressure.units:~P})"), weight="bold", fontsize=12
+    )
 
     # Set the facecolor of the skew-t object and the figure to white
     fig.set_facecolor("#ffffff")
@@ -519,22 +524,12 @@ def plot_skewt(parsed_data, output_filename=None):
     skewleg = skew.ax.legend(loc="upper left")
     hodoleg = hodograph.ax.legend(loc="upper left")
 
-    
     svg_buffer = io.BytesIO()
     plt.savefig(svg_buffer, format="svg", transparent=True)
     plt.close(fig)
     svg_buffer.seek(0)
 
     return svg_buffer.getvalue()
-
-
-
-
-
-
-
-
-
 
 
 @app.route("/generate-skew", methods=["GET"])
@@ -550,7 +545,6 @@ def generate_skew():
     # Bomb out if a bad GET request was sent
     if forecast_days is None or lat is None or lon is None:
         return jsonify({"error": "Must provide 'days', 'lat', and 'lon'"}), 400
-
 
     # 2. Build the Open-Meteo API URL based on these params
     #    Here, we just replicate your example with the included fields:
@@ -647,11 +641,12 @@ def generate_skew():
 
     # Iterate over hours and generate SVGs
     for hour in range(hours_to_process):
+        start_time = time.time()
         parsed_data = parse_json(weather_json, hour_index=hour)
 
         # Generate the SkewT/Hodo as an in-memory SVG
         # in-memory BytesIO to avoid local filesystem usage
-        out_filename = f"skewt_{lat}_{lon}_hour_{hour}.svg"
+        # out_filename = f"skewt_{lat}_{lon}_hour_{hour}.svg"
 
         # The plot_skewt_from_json can accept a file path or file-like.
         # We can save directly to the BytesIO, but we need a small tweak:
@@ -662,9 +657,12 @@ def generate_skew():
         # must save to disk, so let's read it back.
         # with open(out_filename, "rb") as f:
         #     svg_data = f.read()
-
+        
+        print(lat)
+        print(lon)   
+    
         # Now upload the bytes to S3
-        s3_key = f"{'skewt-svg-dumps'}/skewt_hour_{hour}.svg"
+        s3_key = f"{'skewt-svg-dumps'}/skewt_{lat}_{lon}_hour_{hour}.svg"
         try:
             s3_client.put_object(
                 Bucket=BUCKET_NAME,
@@ -679,6 +677,9 @@ def generate_skew():
             all_s3_urls.append(file_url)
         except Exception as e:
             print(f"Error uploading to S3: {e}")
+
+    end_time = time.time()
+    print(f"Elapsed time: {end_time - start_time:.2f} seconds")
 
     # Return JSON respone, describes where the files are stored
     return jsonify(
