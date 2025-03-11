@@ -1,9 +1,16 @@
+import json
 import io
+import os
+import time
 import matplotlib.pyplot as plt
 import numpy as np
 import metpy.calc as mpcalc
 from metpy.plots import Hodograph, SkewT
 from metpy.units import units
+import boto3
+
+
+
 parameters = [
     "temperature",
     "dew_point",
@@ -64,7 +71,7 @@ def parse_json(weather_json, hour_index):
     return parsed
 
 
-def plot_skewt(parsed_data, output_filename=None):
+def plot_skewt_from_json(parsed_data, output_filename=None):
     """
     Given parsed raw data arrays, attach units and plot the SkewT and Hodograph.
     """
@@ -567,4 +574,33 @@ def plot_skewt(parsed_data, output_filename=None):
 
     return svg_buffer.getvalue()
 
+if __name__ == "__main__":
+    start_time = time.time()
+    
+    s3_client = boto3.client("s3", region_name='us-east-1')
+    BUCKET_NAME = "meteo-charts"    # your bucket name
+    FOLDER_NAME = "skewt-svg-dumps"    # folder inside the bucket (if desired)
 
+    with open("data/forecast-shreveport-7-day.json", "r") as file:
+        JSON_sounding = json.load(file)
+
+    for hour in range(23):
+        parsed_data = parse_json(JSON_sounding, hour_index=hour)
+        svg_data = plot_skewt_from_json(parsed_data)
+
+        s3_key = f"{'skewt-svg-dumps'}/skewt_hour_{hour}.svg"
+
+        try:
+            s3_client.put_object(
+                Bucket=BUCKET_NAME,
+                Key=s3_key,
+                Body=svg_data,
+                ContentType="image/svg+xml"
+            )
+            print(f"Uploaded {s3_key} to S3 successfully.")
+        except Exception as e:
+            print(f"Error uploading {s3_key}: {e}")
+
+        
+    end_time = time.time()
+    print(f"Elapsed time: {end_time - start_time:.2f} seconds")

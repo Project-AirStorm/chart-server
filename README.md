@@ -4,3 +4,6 @@ https://api.open-meteo.com/v1/forecast?latitude=32.52&longitude=-93.75&hourly=te
 
 # Run Test Server
 python3 -m http.server 8000
+
+# Delete allf from S3 bucket
+aws s3 rm s3://meteo-charts/skewt-svg-dumps/ --recursive
