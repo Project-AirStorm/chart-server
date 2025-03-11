@@ -1,4 +1,5 @@
 import json
+import io
 import os
 import time
 import matplotlib.pyplot as plt
@@ -6,7 +7,11 @@ import numpy as np
 import metpy.calc as mpcalc
 from metpy.plots import Hodograph, SkewT
 from metpy.units import units
+import boto3
 
+s3_client = boto3.client("s3")
+BUCKET_NAME = "meteo-charts"    # your bucket name
+FOLDER_NAME = "skewt-svg-dumps"    # folder inside the bucket (if desired)
 
 parameters = [
     "temperature",
@@ -564,8 +569,10 @@ def plot_skewt_from_json(parsed_data, output_filename=None):
     hodoleg = hodograph.ax.legend(loc="upper left")
 
     
+    svg_buffer = io.BytesIO()
     plt.savefig(output_filename, format="svg", transparent=True)
     plt.close(fig)
+
 
 
 if __name__ == "__main__":
