@@ -80,4 +80,4 @@ venv.bak/
 .dmypy.json
 dmypy.json
 
-test/
+*.svg

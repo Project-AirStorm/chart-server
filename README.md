@@ -9,8 +9,8 @@ python3 -m http.server 8000
 aws s3 rm s3://meteo-charts/skewt-diagrams --recursive
 
 # Download all SVGs from a specific folder (local testing)
-aws s3 sync s3://meteo-charts/chart_2025-03-11_12-42-15/ svg-dump/
-
+aws s3 sync "s3://meteo-charts/skewt-diagrams/skewt-dumps_user_2sirXuIdmQh7eiB3GwHxZlcQYbI/chart_2025-03-11_12-41-18/" test/svg-dumps/
+aws s3 sync "s3://meteo-charts/skewt-diagrams/skewt-dumps_user_2seeKmUaxI6vzlvi1jzLguWFQZ8/chart_2025-03-11_22-11-15/" test/svg-dumps/
 
 # Test URLs (GET request)
 http://localhost:5000/generate-skew?days=1&lat=32.52&lon=-93.75&user_id=user_2sirXuIdmQh7eiB3GwHxZlcQYbI
