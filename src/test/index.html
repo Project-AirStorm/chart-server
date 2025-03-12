@@ -97,7 +97,7 @@
   <h1>Shreveport 7 Day Forecast</h1>
 
   <div id="image-container">
-    <img id="skewtImage" src="svg-dump/skewt_hour_0.svg" alt="Skew-T Diagram">
+    <img id="skewtImage" src="svg-dumps/skewt_hour_0.svg" alt="Skew-T Diagram">
   </div>
 
   <input type="range" id="hourSlider" min="0" max="167" value="0" step="1">
@@ -113,7 +113,7 @@
     slider.addEventListener('input', function () {
       const hour = slider.value;
       hourDisplay.textContent = "Hour: " + hour;
-      image.src = "svg-dump/skewt_hour_" + hour + ".svg";
+      image.src = "svg-dumps/skewt_hour_" + hour + ".svg";
     });
   </script>
 </body>

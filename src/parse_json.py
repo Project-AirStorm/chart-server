@@ -574,14 +574,14 @@ if __name__ == "__main__":
 
     start_time = time.time()
 
-    output_dir = "svg-dump"
+    output_dir = "test/svg-dumps"
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    with open("data/forecast-shreveport-7-day.json", "r") as file:
+    with open("../data/forecast-shreveport-7-day.json", "r") as file:
         JSON_sounding = json.load(file)
 
-    for hour in range(167):
+    for hour in range(23):
         parsed_data = parse_json(JSON_sounding, hour_index=hour)
         out_file = os.path.join(output_dir, f"skewt_hour_{hour}.svg")
         print(f"Generating: {out_file}")
