@@ -12,11 +12,22 @@ aws s3 rm s3://meteo-charts/skewt-diagrams --recursive
 aws s3 sync "s3://meteo-charts/skewt-diagrams/skewt-dumps_user_2sirXuIdmQh7eiB3GwHxZlcQYbI/chart_2025-03-11_12-41-18/" test/svg-dumps/
 aws s3 sync "s3://meteo-charts/skewt-diagrams/skewt-dumps_user_2seeKmUaxI6vzlvi1jzLguWFQZ8/chart_2025-03-11_22-11-15/" test/svg-dumps/
 
-# Test URLs (GET request)
+# Test EC2 endpoint WITHIN EC2 instance
 http://localhost:5000/generate-skew?days=1&lat=32.52&lon=-93.75&user_id=user_2sirXuIdmQh7eiB3GwHxZlcQYbI
 http://localhost:5000/generate-skew?days=1&lat=32.52&lon=-93.75&user_id=user_2seeKmUaxI6vzlvi1jzLguWFQZ8
 
-curl "http://localhost:5000/generate-skew?days=1&lat=32.52&lon=-93.75&user_id=user_2sirXuIdmQh7eiB3GwHxZlcQYbI"
-curl "http://localhost:5000/generate-skew?days=1&lat=32.52&lon=-93.75&user_id=user_2seeKmUaxI6vzlvi1jzLguWFQZ8"
+
+# Test EC2 endpoints OUTSIDE EC2 instance
+curl -v "http://localhost:5000/generate-skew?days=1&lat=29.7604&lon=-95.3698&user_id=user_2seeKmUaxI6vzlvi1jzLguWFQZ8"
+curl -v "http://localhost:5000/generate-skew?days=1&lat=32.52&lon=-93.75&user_id=user_2sirXuIdmQh7eiB3GwHxZlcQYbI"
 
 
+# Test EC2 endpoint externally (Will use in REACT)
+curl -v "http://ec2-3-221-177-106.compute-1.amazonaws.com:5000/generate-skew?days=1&lat=52.537&lon=13.376&user_id=user_2sirXuIdmQh7eiB3GwHxZlcQYbI"
+
+
+# Verifies flask app binding port 
+sudo netstat -tuln | grep 5000
+
+# Fixed external API issue 
+flask run --host=0.0.0.0 --port=5000
