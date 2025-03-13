@@ -1,33 +1,69 @@
-# URL for all weather variable soundings for one day 
-
-https://api.open-meteo.com/v1/forecast?latitude=32.52&longitude=-93.75&hourly=temperature_1000hPa,temperature_975hPa,temperature_950hPa,temperature_925hPa,temperature_900hPa,temperature_875hPa,temperature_850hPa,temperature_825hPa,temperature_800hPa,temperature_775hPa,temperature_750hPa,temperature_725hPa,temperature_700hPa,temperature_675hPa,temperature_650hPa,temperature_625hPa,temperature_600hPa,temperature_575hPa,temperature_550hPa,temperature_525hPa,temperature_500hPa,temperature_475hPa,temperature_450hPa,temperature_425hPa,temperature_400hPa,temperature_375hPa,temperature_350hPa,temperature_325hPa,temperature_300hPa,temperature_275hPa,temperature_250hPa,temperature_225hPa,temperature_200hPa,temperature_175hPa,temperature_150hPa,temperature_125hPa,temperature_100hPa,temperature_70hPa,temperature_50hPa,temperature_40hPa,temperature_30hPa,temperature_20hPa,temperature_15hPa,temperature_10hPa,dew_point_1000hPa,dew_point_975hPa,dew_point_950hPa,dew_point_925hPa,dew_point_900hPa,dew_point_875hPa,dew_point_850hPa,dew_point_825hPa,dew_point_800hPa,dew_point_775hPa,dew_point_750hPa,dew_point_725hPa,dew_point_700hPa,dew_point_675hPa,dew_point_650hPa,dew_point_625hPa,dew_point_600hPa,dew_point_575hPa,dew_point_550hPa,dew_point_525hPa,dew_point_500hPa,dew_point_475hPa,dew_point_450hPa,dew_point_425hPa,dew_point_400hPa,dew_point_375hPa,dew_point_350hPa,dew_point_325hPa,dew_point_300hPa,dew_point_275hPa,dew_point_250hPa,dew_point_225hPa,dew_point_200hPa,dew_point_175hPa,dew_point_150hPa,dew_point_125hPa,dew_point_100hPa,dew_point_70hPa,dew_point_50hPa,dew_point_40hPa,dew_point_30hPa,dew_point_20hPa,dew_point_15hPa,dew_point_10hPa,wind_speed_1000hPa,wind_speed_975hPa,wind_speed_950hPa,wind_speed_925hPa,wind_speed_900hPa,wind_speed_875hPa,wind_speed_850hPa,wind_speed_825hPa,wind_speed_800hPa,wind_speed_775hPa,wind_speed_750hPa,wind_speed_725hPa,wind_speed_700hPa,wind_speed_675hPa,wind_speed_650hPa,wind_speed_625hPa,wind_speed_600hPa,wind_speed_575hPa,wind_speed_550hPa,wind_speed_525hPa,wind_speed_500hPa,wind_speed_475hPa,wind_speed_450hPa,wind_speed_425hPa,wind_speed_400hPa,wind_speed_375hPa,wind_speed_350hPa,wind_speed_325hPa,wind_speed_300hPa,wind_speed_275hPa,wind_speed_250hPa,wind_speed_225hPa,wind_speed_200hPa,wind_speed_175hPa,wind_speed_150hPa,wind_speed_125hPa,wind_speed_100hPa,wind_speed_70hPa,wind_speed_50hPa,wind_speed_40hPa,wind_speed_30hPa,wind_speed_20hPa,wind_speed_15hPa,wind_speed_10hPa,wind_direction_1000hPa,wind_direction_975hPa,wind_direction_950hPa,wind_direction_925hPa,wind_direction_900hPa,wind_direction_875hPa,wind_direction_850hPa,wind_direction_825hPa,wind_direction_800hPa,wind_direction_775hPa,wind_direction_750hPa,wind_direction_725hPa,wind_direction_700hPa,wind_direction_675hPa,wind_direction_650hPa,wind_direction_625hPa,wind_direction_600hPa,wind_direction_575hPa,wind_direction_550hPa,wind_direction_525hPa,wind_direction_500hPa,wind_direction_475hPa,wind_direction_450hPa,wind_direction_425hPa,wind_direction_400hPa,wind_direction_375hPa,wind_direction_350hPa,wind_direction_325hPa,wind_direction_300hPa,wind_direction_275hPa,wind_direction_250hPa,wind_direction_225hPa,wind_direction_200hPa,wind_direction_175hPa,wind_direction_150hPa,wind_direction_125hPa,wind_direction_100hPa,wind_direction_70hPa,wind_direction_50hPa,wind_direction_40hPa,wind_direction_30hPa,wind_direction_20hPa,wind_direction_15hPa,wind_direction_10hPa,geopotential_height_1000hPa,geopotential_height_975hPa,geopotential_height_950hPa,geopotential_height_925hPa,geopotential_height_900hPa,geopotential_height_875hPa,geopotential_height_850hPa,geopotential_height_825hPa,geopotential_height_800hPa,geopotential_height_775hPa,geopotential_height_750hPa,geopotential_height_725hPa,geopotential_height_700hPa,geopotential_height_675hPa,geopotential_height_650hPa,geopotential_height_625hPa,geopotential_height_600hPa,geopotential_height_575hPa,geopotential_height_550hPa,geopotential_height_525hPa,geopotential_height_500hPa,geopotential_height_475hPa,geopotential_height_450hPa,geopotential_height_425hPa,geopotential_height_400hPa,geopotential_height_375hPa,geopotential_height_350hPa,geopotential_height_325hPa,geopotential_height_300hPa,geopotential_height_275hPa,geopotential_height_250hPa,geopotential_height_225hPa,geopotential_height_200hPa,geopotential_height_175hPa,geopotential_height_150hPa,geopotential_height_125hPa,geopotential_height_100hPa,geopotential_height_70hPa,geopotential_height_50hPa,geopotential_height_40hPa,geopotential_height_30hPa,geopotential_height_20hPa,geopotential_height_15hPa,geopotential_height_10hPa&forecast_days=7&models=gfs_graphcast025
-
-# Run Test Server
+# Testing 
+### Run Test Server for local SVG debugging from metpy 
 python3 -m http.server 8000
 
-# Delete all from S3 bucket
-aws s3 rm s3://meteo-charts/skewt-diagrams --recursive
+### Delete all from S3 bucket
+`aws s3 rm s3://meteo-charts/skewt-diagrams --recursive`
 
-# Download all SVGs from a specific folder (local testing)
-aws s3 sync "s3://meteo-charts/skewt-diagrams/skewt-dumps_user_2sirXuIdmQh7eiB3GwHxZlcQYbI/chart_2025-03-11_12-41-18/" test/svg-dumps/
-aws s3 sync "s3://meteo-charts/skewt-diagrams/skewt-dumps_user_2seeKmUaxI6vzlvi1jzLguWFQZ8/chart_2025-03-11_22-11-15/" test/svg-dumps/
+### Download all SVGs from a specific folder (local testing)
+`aws s3 sync "s3://meteo-charts/skewt-diagrams/skewt-dumps_user_2sirXuIdmQh7eiB3GwHxZlcQYbI/chart_2025-03-11_12-41-18/" test/svg-dumps/`   
+`aws s3 sync "s3://meteo-charts/skewt-diagrams/skewt-dumps_user_2seeKmUaxI6vzlvi1jzLguWFQZ8/chart_2025-03-11_22-11-15/" test/svg-dumps/`
 
-# Test EC2 endpoint WITHIN EC2 instance
-http://localhost:5000/generate-skew?days=1&lat=32.52&lon=-93.75&user_id=user_2sirXuIdmQh7eiB3GwHxZlcQYbI
-http://localhost:5000/generate-skew?days=1&lat=32.52&lon=-93.75&user_id=user_2seeKmUaxI6vzlvi1jzLguWFQZ8
+### Test EC2 endpoint WITHIN EC2 Instance:
+Generates a skew-t for one day:  
+`http://localhost:5000/generate-skew?days=1&lat=32.52&lon=-93.75&user_id=user_2sirXuIdmQh7eiB3GwHxZlcQYbI`   
 
-
-# Test EC2 endpoints OUTSIDE EC2 instance
-curl -v "http://localhost:5000/generate-skew?days=1&lat=29.7604&lon=-95.3698&user_id=user_2seeKmUaxI6vzlvi1jzLguWFQZ8"
-curl -v "http://localhost:5000/generate-skew?days=1&lat=32.52&lon=-93.75&user_id=user_2sirXuIdmQh7eiB3GwHxZlcQYbI"
+### Test EC2 endpoints _OUTSIDE_ EC2 Instance:
+`curl -v "http://ec2-3-221-177-106.compute-1.amazonaws.com:5000/generate-skew?days=1&lat=52.537&lon=13.376&user_id=user_2sirXuIdmQh7eiB3GwHxZlcQYbI"`
 
 
-# Test EC2 endpoint externally (Will use in REACT)
-curl -v "http://ec2-3-221-177-106.compute-1.amazonaws.com:5000/generate-skew?days=1&lat=52.537&lon=13.376&user_id=user_2sirXuIdmQh7eiB3GwHxZlcQYbI"
+# Running in Production on EC2
+### .flaskenv
+```
+FLASK_APP=app.py
+FLASK_RUN_HOST=0.0.0.0
+FLASK_RUN_PORT=5000
+FLASK_ENV=production
+```
+### Gunicorn
+Gunicorn enables us to keep out EC2 running with out an SSH/AWS EC2 Console open:   
+`gunicorn -b 0.0.0.0:5000 app:app`
 
 
-# Verifies flask app binding port 
-sudo netstat -tuln | grep 5000
+### The daemon for flask server:
+Located located in `etc/systemd/system`     
 
-# Fixed external API issue 
-flask run --host=0.0.0.0 --port=5000
+`chart-server.service`:
+```
+[Unit]
+Description=Chart Server Flask App
+After=network.target
+
+[Service]
+User=ubuntu
+WorkingDirectory=/home/ubuntu/chart-server/src
+ExecStart=/home/ubuntu/chart-server/.venv/bin/gunicorn -b 0.0.0.0:5000 app:app
+Restart=always
+Environment=FLASK_ENV=production
+
+[Install]
+WantedBy=multi-user.target
+```
+
+### Start the chart-server service on EC2:
+```
+sudo systemctl daemon-reload
+sudo systemctl start chart-server
+sudo systemctl enable chart-server
+```
+
+### Debugging:
+Ensure the gunicorn server is running on port 5000:
+`sudo lsof -i :5000`
+
+Expected output:
+```
+COMMAND   PID   USER   FD   TYPE DEVICE SIZE/OFF NODE NAME
+gunicorn 8064 ubuntu    5u  IPv4  48835      0t0  TCP *:5000 (LISTEN)
+gunicorn 8111 ubuntu    5u  IPv4  48835      0t0  TCP *:5000 (LISTEN)
+```
