@@ -2,12 +2,14 @@
 ### Run Test Server for local SVG debugging from metpy 
 python3 -m http.server 8000
 
+### List a chart buckets SVGs for a user
+`aws s3 ls s3://meteo-charts/skewt-diagrams/skewt-dumps_user_2seeKmUaxI6vzlvi1jzLguWFQZ8/chart_2025-04-02_17-48-31/`
+
 ### Delete all from S3 bucket
 `aws s3 rm s3://meteo-charts/skewt-diagrams --recursive`
 
 ### Download all SVGs from a specific folder (local testing)
 `aws s3 sync "s3://meteo-charts/skewt-diagrams/skewt-dumps_user_2sirXuIdmQh7eiB3GwHxZlcQYbI/chart_2025-03-11_12-41-18/" test/svg-dumps/`   
-`aws s3 sync "s3://meteo-charts/skewt-diagrams/skewt-dumps_user_2seeKmUaxI6vzlvi1jzLguWFQZ8/chart_2025-03-11_22-11-15/" test/svg-dumps/`
 
 ### Test EC2 endpoint WITHIN EC2 Instance:
 Generates a skew-t for one day:  
