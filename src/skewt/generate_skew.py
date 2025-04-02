@@ -15,7 +15,7 @@ parameters = [
     "geopotential_height",
 ]
 
-
+# Parses the input data from the open-meteo API 
 def parse_json(weather_json, hour_index):
     """
     Iterates over the JSON array, if it contains null is casts it a np.nan, which makes the processing below easier.

@@ -11,7 +11,7 @@ python3 -m http.server 8000
 
 ### Test EC2 endpoint WITHIN EC2 Instance:
 Generates a skew-t for one day:  
-`http://localhost:5000/generate-skew?days=1&lat=32.52&lon=-93.75&user_id=user_2sirXuIdmQh7eiB3GwHxZlcQYbI`   
+`curl "http://localhost:5000/generate-skew?days=1&lat=32.52&lon=-93.75&user_id=user_2sirXuIdmQh7eiB3GwHxZlcQYbI"`   
 
 ### Test EC2 endpoints _OUTSIDE_ EC2 Instance:
 `curl -v "http://ec2-3-221-177-106.compute-1.amazonaws.com:5000/generate-skew?days=1&lat=52.537&lon=13.376&user_id=user_2sirXuIdmQh7eiB3GwHxZlcQYbI"`

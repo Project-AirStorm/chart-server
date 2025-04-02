@@ -19,7 +19,7 @@ kiwisolver==1.4.8
 MarkupSafe==3.0.2
 matplotlib==3.10.0
 MetPy==1.6.3
-mpld3==0.5.10
+mpld3==0.5.10f
 mypy-extensions==1.0.0
 numpy==2.2.3
 packaging==24.2
