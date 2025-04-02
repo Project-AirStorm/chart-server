@@ -16,6 +16,9 @@ Generates a skew-t for one day:
 ### Test EC2 endpoints _OUTSIDE_ EC2 Instance:
 `curl -v "http://ec2-3-221-177-106.compute-1.amazonaws.com:5000/generate-skew?days=1&lat=52.537&lon=13.376&user_id=user_2sirXuIdmQh7eiB3GwHxZlcQYbI"`
 
+`curl -v "http://ec2-3-221-177-106.compute-1.amazonaws.com:5000/generate-skew?days=1&lat=52.537&lon=13.376&user_id=user_2seeKmUaxI6vzlvi1jzLguWFQZ8"`
+
+
 
 # Running in Production on EC2
 ### .flaskenv
