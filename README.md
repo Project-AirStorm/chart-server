@@ -42,10 +42,7 @@ After=network.target
 [Service]
 User=ubuntu
 WorkingDirectory=/home/ubuntu/chart-server/src
-ExecStart=/home/ubuntu/chart-server/.venv/bin/gunicorn \
-    --bind 0.0.0.0:5000 \
-    --timeout 300 \
-    app:app
+ExecStart=/home/ubuntu/chart-server/.venv/bin/gunicorn -b 0.0.0.0:5000 app:app
 Restart=always
 Environment=FLASK_ENV=production
 
